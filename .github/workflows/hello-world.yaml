@@ -11,15 +11,36 @@ on:
         description: Select an environment
         type: string
         required: true
-      runner:
-        description: Runner to execute the workflow
-        type: string
-        required: true
+
         
 jobs:
+  setup-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      var1: ${{ steps.set-environment.outputs.environment }}
+    steps:
+      - name: Determine environment
+        id: set-environment
+        shell: bash
+        run: |
+          if [ ${{ github.event_name == 'push' }} ]; then
+            echo "Pushing to mainbranch, assuming Environment is STAGING"
+            echo "environment=staging" >> $GITHUB_ENV
+          elif [ ${{ github.event_name == 'pull_request' }} ]; then
+            echo "Pull request, assuming Environment is PR"
+            echo "environment=pr" >> $GITHUB_ENV
+          elif [ ${{ github.event_name == 'workflow_dispatch' }} ]; then
+            echo "Workflow dispatch, using provided environment: ${{ inputs.environment }}"
+            echo "environment=${{ inputs.environment }}" >> $GITHUB_ENV
+          else
+            echo "Unknown event,aborting"
+            exit 1
+          fi
+
   greet:
     runs-on: ubuntu-${{ inputs.runner }}
-    environment: ${{ inputs.environment }}
+    environment: ${{ vars.environment }}
+    needs: setup-environment
     steps:
       - name: Greet
         run: |
