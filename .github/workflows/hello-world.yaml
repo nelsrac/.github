@@ -4,14 +4,13 @@ on:
   workflow_call:
     inputs:
       name:
-        description: Who to greet?
+        description: Whom to greet?
         type: string
         required: true
       environment:
         description: Select an environment
         type: string
         required: false
-
         
 jobs:
   setup-environment:
@@ -19,18 +18,15 @@ jobs:
     outputs:
         environment: ${{ steps.set-environment.outputs.environment }}
     steps:
-      - name: echo event
-        run: |
-          echo "Event: ${{ github.event_name }}"
       - name: Determine environment
         id: set-environment
         shell: bash
         run: |
           if [ ${{ github.event_name }} == 'push' ]; then
-            echo "Pushing to mainbranch, assuming Environment is STAGING"
+            echo "Pushing to mainbranch, Environment is STAGING"
             echo "environment=staging" >> $GITHUB_OUTPUT
           elif [ ${{ github.event_name }} == 'pull_request' ]; then
-            echo "Pull request, assuming Environment is PR"
+            echo "Pull request, Environment is PR"
             echo "environment=pr" >> $GITHUB_OUTPUT
           elif [ ${{ github.event_name }} == 'workflow_dispatch' ]; then
             echo "Workflow dispatch, using provided environment: ${{ inputs.environment }}"
@@ -39,18 +35,28 @@ jobs:
             echo "Unknown event,aborting"
             exit 1
           fi
-      - name: echo output
-        run: |
-          echo "Environment set to: ${{ steps.set-environment.outputs.environment }}"
 
-  greet:
+  deploy:
     runs-on: ubuntu-latest
     needs: setup-environment
-    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || needs.setup-environment.outputs.environment }}
+    environment: ${{ needs.setup-environment.outputs.environment }}
     steps:
-      - name: Greet
+      - name: Prepare SSH Environment
+        id: setup-ssh
+        shell: bash
+        env:
+          DOCKER_HOST: ${{ vars.DOCKERHOST }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          echo "Hello ${{ inputs.name }}!"
+          mkdir -p /home/runner/.ssh
+          ssh-keyscan ${{ vars.HOSTNAME }} > /home/runner/.ssh/known_hosts
+          echo "${{ inputs.ssh-key }}" > /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add /home/runner/.ssh/github_actions
+      - name: List Docker images
+        run: |
+          docker image ls
       - name: List environment
         run: |
           echo "Environment: ${{ needs.setup-environment.outputs.environment }}"
