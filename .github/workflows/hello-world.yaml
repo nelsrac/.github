@@ -11,7 +11,10 @@ on:
         description: Select an environment
         type: string
         required: false
-        
+    secrets:
+      SSH_KEY:
+        required: true
+
 jobs:
   setup-environment:
     runs-on: ubuntu-latest
@@ -47,12 +50,11 @@ jobs:
         env:
           DOCKER_HOST: ${{ vars.DOCKERHOST }}
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          SSH_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
         run: |
           mkdir -p /home/runner/.ssh
           ssh-keyscan ${{ vars.HOSTNAME }} > /home/runner/.ssh/known_hosts
-          echo "$SSH_KEY" | wc -l
-          echo "$SSH_KEY" > /home/runner/.ssh/github_actions
+          echo "${{ secrets.SSH_KEY }}" | wc -l
+          echo "${{ secrets.SSH_KEY }}" > /home/runner/.ssh/github_actions
           ls -l /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
