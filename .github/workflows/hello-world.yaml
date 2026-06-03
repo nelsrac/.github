@@ -16,8 +16,6 @@ on:
 jobs:
   setup-environment:
     runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.set-environment.outputs.environment }}
     steps:
       - name: echo event
         run: |
@@ -42,15 +40,15 @@ jobs:
 
   greet:
     runs-on: ubuntu-latest
-    environment: ${{ needs.setup-environment.outputs.environment }}
     needs: setup-environment
+    environment: ${{ needs.setup-environment.outputs.environment }}
     steps:
       - name: Greet
         run: |
           echo "Hello ${{ inputs.name }}!"
       - name: List environment
         run: |
-          echo "Environment: ${{ steps.set-environment.outputs.environment }}"
+          echo "Environment: ${{ needs.setup-environment.outputs.environment }}"
       - name: List Docker host
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
