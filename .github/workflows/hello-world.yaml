@@ -4,13 +4,23 @@ on:
   workflow_call:
     inputs:
       name:
+        description: Who to greet?
+        type: string
+        required: true
+      environment:
+        description: Select an environment
         type: string
         required: true
 
+        
 jobs:
   greet:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Greet
         run: |
           echo "Hello ${{ inputs.name }}!"
+      - name: List environment
+        run:
+          echo ${{ vars.DOCKERHOST }}
