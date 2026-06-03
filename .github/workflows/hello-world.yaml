@@ -23,21 +23,25 @@ jobs:
         run: |
           echo "Event: ${{ github.event_name }}"
       - name: Determine environment
+        id: set-environment
         shell: bash
         run: |
-          if [ ${{ github.event_name == 'push' }} ]; then
+          if [ ${{ github.event_name }} == 'push' ]; then
             echo "Pushing to mainbranch, assuming Environment is STAGING"
             echo "environment=staging" >> $GITHUB_OUTPUT
-          elif [ ${{ github.event_name == 'pull_request' }} ]; then
+          elif [ ${{ github.event_name }} == 'pull_request' ]; then
             echo "Pull request, assuming Environment is PR"
             echo "environment=pr" >> $GITHUB_OUTPUT
-          elif [ ${{ github.event_name == 'workflow_dispatch' }} ]; then
+          elif [ ${{ github.event_name }} == 'workflow_dispatch' ]; then
             echo "Workflow dispatch, using provided environment: ${{ inputs.environment }}"
             echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
           else
             echo "Unknown event,aborting"
             exit 1
           fi
+      - name: echo output
+        run: |
+          echo "Environment set to: ${{ steps.set-environment.outputs.environment }}"
 
   greet:
     runs-on: ubuntu-latest
