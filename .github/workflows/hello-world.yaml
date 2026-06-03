@@ -11,6 +11,10 @@ on:
         description: Select an environment
         type: string
         required: false
+      ssh-key:
+        description: SSH private key for deployment
+        type: string
+        required: true
         
 jobs:
   setup-environment:
