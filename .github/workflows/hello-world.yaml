@@ -17,7 +17,7 @@ jobs:
   setup-environment:
     runs-on: ubuntu-latest
     outputs:
-      var1: ${{ steps.set-environment.outputs.environment }}
+      environment: ${{ steps.set-environment.outputs.environment }}
     steps:
       - name: Determine environment
         id: set-environment
@@ -25,13 +25,13 @@ jobs:
         run: |
           if [ ${{ github.event_name == 'push' }} ]; then
             echo "Pushing to mainbranch, assuming Environment is STAGING"
-            echo "environment=staging" >> $GITHUB_ENV
+            echo "environment=staging" >> $GITHUB_OUTPUT
           elif [ ${{ github.event_name == 'pull_request' }} ]; then
             echo "Pull request, assuming Environment is PR"
-            echo "environment=pr" >> $GITHUB_ENV
+            echo "environment=pr" >> $GITHUB_OUTPUT
           elif [ ${{ github.event_name == 'workflow_dispatch' }} ]; then
             echo "Workflow dispatch, using provided environment: ${{ inputs.environment }}"
-            echo "environment=${{ inputs.environment }}" >> $GITHUB_ENV
+            echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
           else
             echo "Unknown event,aborting"
             exit 1
@@ -39,7 +39,7 @@ jobs:
 
   greet:
     runs-on: ubuntu-latest
-    environment: ${{ vars.environment }}
+    environment: ${{ needs.setup-environment.outputs.environment }}
     needs: setup-environment
     steps:
       - name: Greet
