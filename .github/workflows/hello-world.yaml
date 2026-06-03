@@ -11,6 +11,7 @@ on:
         description: Select an environment
         type: string
         required: false
+    secrets:
       ssh-key:
         description: SSH private key for deployment
         type: string
@@ -54,7 +55,7 @@ jobs:
         run: |
           mkdir -p /home/runner/.ssh
           ssh-keyscan ${{ vars.HOSTNAME }} > /home/runner/.ssh/known_hosts
-          echo "${{ inputs.ssh-key }}" > /home/runner/.ssh/github_actions
+          echo "${{ secrets.SSH_DEPLOY_KEY }}" > /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add /home/runner/.ssh/github_actions
