@@ -47,7 +47,7 @@ jobs:
           echo "Hello ${{ inputs.name }}!"
       - name: List environment
         run: |
-          echo "Environment: ${{ vars.environment }}"
+          echo "Environment: ${{ env.environment }}"
       - name: List Docker host
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
