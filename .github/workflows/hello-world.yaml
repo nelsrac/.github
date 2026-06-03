@@ -46,5 +46,6 @@ jobs:
         run: |
           echo "Hello ${{ inputs.name }}!"
       - name: List environment
-        run:
+        run: |
+          echo "Environment: ${{ vars.environment }}"
           echo ${{ vars.DOCKERHOST }}
