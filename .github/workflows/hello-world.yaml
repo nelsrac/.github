@@ -38,7 +38,7 @@ jobs:
           fi
 
   greet:
-    runs-on: ubuntu-${{ inputs.runner }}
+    runs-on: ubuntu-latest
     environment: ${{ vars.environment }}
     needs: setup-environment
     steps:
