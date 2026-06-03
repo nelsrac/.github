@@ -14,7 +14,6 @@ on:
     secrets:
       ssh-key:
         description: SSH private key for deployment
-        type: string
         required: true
         
 jobs:
