@@ -1,0 +1,16 @@
+name: Reusable Workflow Example
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        type: string
+        required: true
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Greet
+        run: |
+          echo "Hello ${{ inputs.name }}!
