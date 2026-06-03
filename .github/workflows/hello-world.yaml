@@ -16,6 +16,8 @@ on:
 jobs:
   setup-environment:
     runs-on: ubuntu-latest
+    outputs:
+        environment: ${{ steps.set-environment.outputs.environment }}
     steps:
       - name: echo event
         run: |
