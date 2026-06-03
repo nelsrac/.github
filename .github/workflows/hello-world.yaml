@@ -51,6 +51,7 @@ jobs:
         run: |
           mkdir -p /home/runner/.ssh
           ssh-keyscan ${{ vars.HOSTNAME }} > /home/runner/.ssh/known_hosts
+          echo "$SSH_KEY" | wc -l
           echo "$SSH_KEY" > /home/runner/.ssh/github_actions
           ls -l /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
