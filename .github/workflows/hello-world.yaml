@@ -11,11 +11,14 @@ on:
         description: Select an environment
         type: string
         required: true
-
+      runner:
+        description: Runner to execute the workflow
+        type: string
+        required: true
         
 jobs:
   greet:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-${{ inputs.runner }}
     environment: ${{ inputs.environment }}
     steps:
       - name: Greet
