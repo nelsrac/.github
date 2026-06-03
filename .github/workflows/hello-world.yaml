@@ -55,6 +55,7 @@ jobs:
           mkdir -p /home/runner/.ssh
           ssh-keyscan ${{ vars.HOSTNAME }} > /home/runner/.ssh/known_hosts
           echo "${{ secrets.SSH_DEPLOY_KEY }}" > /home/runner/.ssh/github_actions
+          ls -l /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add /home/runner/.ssh/github_actions
