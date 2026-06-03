@@ -47,7 +47,7 @@ jobs:
       - name: Prepare SSH Environment
         id: setup-ssh
         shell: bash
-        env:
+        env: &env_vars
           DOCKER_HOST: ${{ vars.DOCKERHOST }}
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
@@ -60,6 +60,7 @@ jobs:
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add /home/runner/.ssh/github_actions
       - name: List Docker images
+        env: *env_vars
         run: |
           docker image ls
       - name: List environment
